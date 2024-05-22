@@ -1,0 +1,14 @@
+{
+  "python.autoComplete.extraPaths": [
+    "/home/cyclone_20/drone_racing_ros2_ws/install/tello_msgs/lib/python3.8/site-packages",
+    "/home/cyclone_20/Desktop/Cyclone_20.4/Projects/Aerial_robotics/Ros_project/ros_ws/build/my_py_pkg",
+    "/home/cyclone_20/Desktop/Cyclone_20.4/Projects/Aerial_robotics/Ros_project/ros_ws/install/my_py_pkg/lib/python3.8/site-packages",
+    "/home/cyclone_20/Desktop/Cyclone_20.4/Projects/Aerial_robotics/Ros_project/ros_ws/build/check",
+    "/home/cyclone_20/Desktop/Cyclone_20.4/Projects/Aerial_robotics/Ros_project/ros_ws/install/check/lib/python3.8/site-packages",
+    "/opt/ros/galactic/lib/python3.8/site-packages"
+  ],
+  "python.analysis.extraPaths": [
+    "/home/cyclone_20/drone_racing_ros2_ws/install/tello_msgs/lib/python3.8/site-packages",
+    "/opt/ros/galactic/lib/python3.8/site-packages"
+  ]
+}
