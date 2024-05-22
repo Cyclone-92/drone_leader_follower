@@ -68,6 +68,26 @@ import subprocess
 import re
 import numpy as np
 
+class PID:
+    def __init__(self, Kp, Ki, Kd, setpoint=0):
+        self.Kp = Kp
+        self.Ki = Ki
+        self.Kd = Kd
+        self.setpoint = setpoint
+
+        self._previous_error = 0
+        self._integral = 0
+
+    def update(self, current_value):
+        error = self.setpoint - current_value
+        self._integral += error
+        derivative = error - self._previous_error
+
+        output = (self.Kp * error) + (self.Ki * self._integral) + (self.Kd * derivative)
+        self._previous_error = error
+
+        return output
+
 class DroneController(Node):
     def __init__(self, takeoff_delay=2):
         super().__init__('drone_controller')
@@ -177,72 +197,82 @@ class DroneController(Node):
             twist_dic[content].linear.y = 0.0
             self.velocity_publishers[content].publish(twist_dic[content])
 
-    def adjust_followers(self, position ,drone_ns):
+    def adjust_followers(self, position, drone_ns):
+        """
+        Adjusts the position of follower drones relative to the leader drone.
 
-        if (self.take_off):
+        Args:
+            position (tuple): The current position (x, y, z) of the drone.
+            drone_ns (str): The namespace identifier for the drone.
+        """
 
+        # Check if the drones have taken off
+        if self.take_off:
+            
+            # Set the gaps between the drones
             x_gap = 1
             y_gap = 2
             z_gap = 0
 
-            gain = 0.5
+            # Unpack the position coordinates
+            x, y, z = position
 
-            x = position[0]
-            y = position[1]
-            z = position[2]
-
+            # Initialize dictionaries to store positions and velocities of drones
             drone_xyz = dict()
             drone_twist = dict()
 
-            for i,cont in enumerate(self.followers):
+            # PID controllers for each axis
+            pid_x = PID(Kp=0.5, Ki=0.0, Kd=0.1)
+            pid_y = PID(Kp=0.5, Ki=0.0, Kd=0.1)
+            pid_z = PID(Kp=0.5, Ki=0.0, Kd=0.1)
 
-                if (cont == drone_ns):
+            for i, cont in enumerate(self.followers):
+
+                if cont == drone_ns:
                     follower_index = self.drone_namespaces.index(cont)
                     leader_index = self.drone_namespaces.index(self.leader_drone)
                     drone_twist[cont] = Twist()
 
                     if follower_index < leader_index:
                         index_i = self.drone_namespaces[0:leader_index].index(cont)
-                        drone_xyz[cont+"_xyz"] = ((self.positions[self.leader_drone][0] - (x_gap*(index_i+1))),(self.positions[self.leader_drone][1] - (y_gap*(index_i+1))),(self.positions[self.leader_drone][2] - z_gap))
+                        drone_xyz[cont+"_xyz"] = (
+                            self.positions[self.leader_drone][0] - (x_gap * (index_i + 1)),
+                            self.positions[self.leader_drone][1] - (y_gap * (index_i + 1)),
+                            self.positions[self.leader_drone][2] - z_gap
+                        )
                     else:
-                        index_i = self.drone_namespaces[leader_index+1:].index(cont)
-                        drone_xyz[cont+"_xyz"] = ((self.positions[self.leader_drone][0] + (x_gap*(index_i+1))),(self.positions[self.leader_drone][1] - (y_gap*(index_i+1))),(self.positions[self.leader_drone][2] + z_gap))
+                        index_i = self.drone_namespaces[leader_index + 1:].index(cont)
+                        drone_xyz[cont+"_xyz"] = (
+                            self.positions[self.leader_drone][0] + (x_gap * (index_i + 1)),
+                            self.positions[self.leader_drone][1] - (y_gap * (index_i + 1)),
+                            self.positions[self.leader_drone][2] + z_gap
+                        )
 
-                    if abs(self.positions[self.leader_drone][0]- x) > 10:
-                        gain = 10
-                    else:
-                        gain = abs(self.positions[self.leader_drone][0]- x)
+                    # Set the setpoints for the PID controllers
+                    pid_x.setpoint = drone_xyz[cont+"_xyz"][0]
+                    pid_y.setpoint = drone_xyz[cont+"_xyz"][1]
+                    pid_z.setpoint = drone_xyz[cont+"_xyz"][2]
 
-                    gain = gain/10
+                    # Compute the control signals using the PID controllers
+                    drone_twist[cont].linear.x = pid_x.update(x)
+                    drone_twist[cont].linear.y = pid_y.update(y)
+                    drone_twist[cont].linear.z = pid_z.update(z)
 
-                    if x == drone_xyz[cont+"_xyz"][0]:
-                        drone_twist[cont].linear.x = 0.0
-                    elif (drone_xyz[cont+"_xyz"][0]) > x:
-                        drone_twist[cont].linear.x = gain
-                    elif (drone_xyz[cont+"_xyz"][0]) < x:
-                        drone_twist[cont].linear.x = -gain
-                    if drone_xyz[cont+"_xyz"][1] == y:
-                        drone_twist[cont].linear.y = 0.0
-                    elif (drone_xyz[cont+"_xyz"][1]) > y:
-                        drone_twist[cont].linear.y = gain
-                    elif (drone_xyz[cont+"_xyz"][1]) < y:
-                        drone_twist[cont].linear.y = -gain
-                    if drone_xyz[cont+"_xyz"][2] == z:
-                        drone_twist[cont].linear.z = 0.0
-                    elif (drone_xyz[cont+"_xyz"][2]) > z:
-                        drone_twist[cont].linear.z = gain
-                    elif (drone_xyz[cont+"_xyz"][2]) < z:
-                        drone_twist[cont].linear.z = -gain
-
+                    # Publish the calculated velocity to the current drone
                     self.velocity_publishers[cont].publish(drone_twist[cont])
-                    print(f"Publishing {cont}: {drone_twist[cont].linear.x,drone_twist[cont].linear.y,drone_twist[cont].linear.z}")
+                    print(f"Publishing {cont}: {drone_twist[cont].linear.x, drone_twist[cont].linear.y, drone_twist[cont].linear.z}")
+
                     break
 
+
 def launch_gazebo():
-    subprocess.Popen(['ros2', 'launch', 'tello_gazebo', 'simple_launch.py'])
+    subprocess.Popen(['ros2', 'launch', 'tello_gazebo', 'openproject.py'])
 
 def main(args=None):
 
+    launch_gazebo()
+
+    time.sleep(6)
     # Initialize the ROS2 client library
     rclpy.init(args=args)
 
