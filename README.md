@@ -50,8 +50,8 @@ If you run into the **No namespace found** error, re-set `GAZEBO_MODEL_PATH`:
 
 ## Authors:
      - Michalis Iona [michalis.l.iona@utu.fi]
-     - Prashan Herath [prashan.r.herathmudiyanselage@utu.fi]
      - Julian C. Paez P. [julian.c.paezpineros@utu.fi]
+     - Prashan Herath [prashan.r.herathmudiyanselage@utu.fi]
      
      
 University of Turku TIERS lab group.
