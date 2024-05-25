@@ -83,6 +83,7 @@ install(
 install(
   PROGRAMS src/inject_entity.py
   PROGRAMS src/drone_controller.py
+  PROGRAMS src/OpenProject.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

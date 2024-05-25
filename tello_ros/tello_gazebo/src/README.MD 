@@ -1,5 +1,0 @@
-                                        important!
-The below is the task alloacater which controlls the shapes and the colors in the Tuples 1st digit, 1 stands for square shape and 0 stands for circle shape
-2nd digit determines the color.each tuple is a one state. if you wish to change the control sequence you can change these.
-
-once the gazebo simulator is laucnhed you can execute the python code.
