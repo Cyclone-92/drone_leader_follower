@@ -10,6 +10,10 @@
 * `drone_controller.py` is the script to control the drone autonomously.
 * The built-in camera plugin is used to emulate the Gazebo forward-facing camera.
 
+# Watch
+[Watch the video]([https://www.example.com/path-to-your-video](https://github.com/Cyclone-92/drone_leader_follower/blob/main/video.mp4))
+
+
 ## Installation
 #### Install ROS2 Galactic
     https://docs.ros.org/ with the `ros-galactic-desktop` option.
