@@ -10,8 +10,9 @@
 * `drone_controller.py` is the script to control the drone autonomously.
 * The built-in camera plugin is used to emulate the Gazebo forward-facing camera.
 
-# Watch
-[Watch the video]([https://www.example.com/path-to-your-video](https://github.com/Cyclone-92/drone_leader_follower/blob/main/video.mp4))
+<div style="center">
+  <img src="gif.gif" alt="Demo Animation" style="width:100%;">
+</div>
 
 
 ## Installation
