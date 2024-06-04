@@ -1,59 +1,62 @@
 """
-# Aerial Robotics UTU 2024: Group 5 - Open Project
- 
-## Description:
-This code is meant to take off 3 tello drones, then 
-follow each other while forming a triangle, in a 
-gazebo simulation, using ROS2 and OpenCV.
+# <div align="center">`Drone-choreography`</div>
+# <div align="center">`University of Turku: Aerial Robotics Group 5 - Open Project (DTEK2084)`</div>
+## Running a Tello simulation in [Gazebo](http://gazebosim.org/)
 
-Based on: https://github.com/TIERS/drone_racing_ros2/tree/main
+`tello_gazebo` consists of several components:
+* `TelloPlugin` simulates a drone, handling takeoff, landing, and very simple flight dynamics.
+* `markers` contains Gazebo models for fiducial markers.
+* `fiducial.world` is a simple world with a bunch of fiducial markers.
+* `inject_entity.py` is a script that will read a URDF (ROS) or SDF (Gazebo) file and spawn a model in a running instance of Gazebo.
+* `drone_controller.py` is the script to control the drone autonomously.
+* The built-in camera plugin is used to emulate the Gazebo forward-facing camera.
 
-## Installation:
-Run this on your console once: (or VisualStudio Code terminal, if you rather)
+<div style="center">
+  <img src="gif.gif" alt="Demo Animation" style="width:100%;">
+</div>
 
-    mkdir -p ~/drone_racing_ros2_ws/src
-    cd ~/drone_racing_ros2_ws/src
-    git clone https://github.com/TIERS/drone_racing_ros2.git
+
+## Installation
+#### Install ROS2 Galactic
+    https://docs.ros.org/ with the `ros-galactic-desktop` option.
+#### Make sure you have Gazebo 
+    sudo apt install gazebo11 libgazebo11 libgazebo11-dev
+#### Add the following
+    sudo apt install libasio-dev
+    sudo apt install ros-galactic-cv-bridge ros-galactic-camera-calibration-parsers 
+    sudo apt install libignition-rendering3 
+    pip3 install transformations
+
+#### Build this package
+    mkdir -p ~/leader_following_swarm/src
+    cd ~/leader_following_swarm/src
+    git clone https://github.com/Cyclone-92/drone_leader_follower.git
     cd ..
     source /opt/ros/galactic/setup.bash
     colcon build
+    
+#### Run a teleop simulation
 
-## Usage
-Run this every time you want to run the gazebo environment
-
-    cd ~/drone_racing_ros2_ws
+    cd ~/leader_following_swarm
     source install/setup.bash
     export GAZEBO_MODEL_PATH=${PWD}/install/tello_gazebo/share/tello_gazebo/models
     source /usr/share/gazebo/setup.sh
-    #ros2 launch tello_gazebo simple_launch.py
+    ros2 launch tello_gazebo openproject.py
+    
+You will see a single drone in a world with 13 different gates with a Euro pallet and a stop sign.
 
-Then, run this file with python from console and you are good to go :D
+If you run into the **No namespace found** error, re-set `GAZEBO_MODEL_PATH`:
 
-## Extra
-You can also add the path to to your ".bashrc" file, if you want to run the python file faster...
-
-    nano ~/.bashrc
-
-And then add:
-
-    # Drone_Racing_ROS2
-    cd ~/drone_racing_ros2_ws
-    source install/setup.bash
     export GAZEBO_MODEL_PATH=${PWD}/install/tello_gazebo/share/tello_gazebo/models
-    export GAZEBO_MODEL_PATH=/home/julian/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models
     source /usr/share/gazebo/setup.sh
 
-Enjoy!
- 
-## Authors: 
-
-     - Prashan Herath [prashan.r.herathmudiyanselage@utu.fi]
-     - Julian C. Paez P. [julian.c.paezpineros@utu.fi]
+## Authors:
      - Michalis Iona [michalis.l.iona@utu.fi]
-
-For: University of Turku - TIERS 
-Course: Aerial Robotics and Multi-Robot Systems 
-Date: May 16th, 2024 
+     - Julian C. Paez P. [julian.c.paezpineros@utu.fi]
+     - Prashan Herath [prashan.r.herathmudiyanselage@utu.fi]
+     
+     
+University of Turku TIERS lab group.
 
 """
 
